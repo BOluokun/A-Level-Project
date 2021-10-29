@@ -1,0 +1,96 @@
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>ScoreLily - {{ user.username }}'s Library</title>
+    <nav class="navigation-bar">
+      <a href="{% url 'user_library' user.username %}">HOME</a> |
+      <a href="{% url 'public_library' user.username %}">PUBLIC LIBRARY</a> |
+      <a href="{% url 'user_library' user.username %}">MY LIBRARY</a>
+    </nav>
+  </head>
+
+  <body>
+    {% get_media_prefix %}
+    <div id="user-search-bar" class="top-bar">
+      <form action="{% url 'user_library' user.username %}" method="post">
+        {% csrf_token %}
+        <label for="search">Search Your Library:</label>
+        <input type="search" name="search">
+      </form>
+    </div>
+
+    <div id="user-sort-bar" class="side-bar">
+      Order Scores By:
+      <form class="sort" action="{% url 'user_library' user.username %}" method="post">
+        {% csrf_token %}
+        <input id="title" type="radio" name="sort-options" value="title">
+        <label for="title">Title</label>
+        <input id="created-date" type="radio" name="sort-options" value="created date">
+        <label for="created-date">Date Created</label>
+        <input id="last-modified" type="radio" name="sort-options" value="last modified">
+        <label for="last-modified">Date Last Modified</label>
+        <input type="submit" name="choose" value="Choose">
+      </form>
+    </div>
+
+      <form id="new-score-form" action="{% url 'make_score' user.username %}" method="post">
+        {% csrf_token %}
+        <label for="title">Create a new score:</label>
+        <input type="text" name="title" placeholder="Title">
+        <input type="submit" name="new-score" value="Create">
+      </a>
+
+    <div class="score-table">
+      <table>
+        <tr>
+          <th>Title</th>
+          <th>Last Modified</th>
+          <th>Created</th>
+          <th>Public?</th>
+          <th></th>
+        </tr>
+        {% for s in scores %}
+          <tr>
+            <td>{{ s.title }}</td>
+            <td>{{ s.last_modified }}</td>
+            <td>{{ s.date_created }}</td>
+            <td>
+              {% if s.public %}
+                Yes
+              {% else %}
+              No
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'open_editor' s.author s.scoreID %}">
+                <button type="button" name="open">Open</button>
+              </a>
+              {% if s.public %}
+                <a href="{% url 'upload' s.author s.scoreID %}">
+                  <button type="button" name="upload">Remove from Public Library</button>
+                </a>
+              {% else %}
+                <a href="{% url 'upload' s.author s.scoreID %}">
+                  <button type="button" name="upload">Upload to Public Library</button>
+                </a>
+              {% endif %}
+              <a href="{{ STATIC_PREFIX }}scorefiles/{{ s.pdf_file }}" download target="_blank">
+                <button type="button" name="export-pdf">Download PDF</button>
+              </a>
+              <a href="{{ STATIC_PREFIX }}scorefiles/{{ s.music_file }}" download target="_blank">
+                <button type="button" name="export-midi">Download MIDI</button>
+              </a>
+              <a href="{% url 'delete' s.author s.scoreID %}">
+                <button type="button" name="delete-score">Delete</button>
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+  </body>
+</html>

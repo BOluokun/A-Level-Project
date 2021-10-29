@@ -1,0 +1,28 @@
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>ScoreLily - Home</title>
+    <nav class="navigation-bar">
+      <a href="{% url 'home' %}">HOME</a> |
+      <a href="{% url 'login' %}">PUBLIC LIBRARY</a> |
+      <a href="{% url 'login' %}">MY LIBRARY</a>
+    </nav>
+  </head>
+  <body>
+    <div id="home-title">
+      ScoreLily
+    </div>
+    <div class="text">
+      ScoreLily is platform to create and share music scores.
+    </div>
+    <div id="account-links">
+      <a href="{% url 'create_account' %}">
+        <button type="button" name="create-account">Create Account</button>
+      </a>
+      <a href="{% url 'login' %}">Or login</a>
+    </div>
+  </body>
+</html>

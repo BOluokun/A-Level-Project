@@ -1,0 +1,36 @@
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>ScoreLily - Login</title>
+    <nav class="navigation-bar">
+      <a href="{% url 'home' %}">HOME</a>
+      <a href="{% url 'login' %}">PUBLIC LIBRARY</a> |
+      <a href="{% url 'login' %}">MY LIBRARY</a>
+    </nav>
+  </head>
+  <body>
+      <div class="page-title">
+        Welcome Back
+      </div>
+      <form id="login-form" class="accounts-form" action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <label for="username">Username:</label>
+        <input type="text" name="username">
+        <label for="password">Password:</label>
+        <input type="password" name="password">
+        <input type="submit" name="login" value="Login">
+      </form>
+      <div id="failed-login-message" class="error-message">
+        {% if message != "None" %}
+          {{ message }}
+        {% endif %}
+      </div>
+      <div id="create-account-link">
+        Don't have an account?<br>
+        <a href="{% url 'create_account' %}">Create One</a>
+      </div>
+  </body>
+</html>

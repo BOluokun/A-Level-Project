@@ -1,0 +1,217 @@
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{% static 'css/main_style_sheet.css' %}">
+    <title>{{ score.title }} - editing...</title>
+    <nav class="Navigation bar">
+      <a href="{% url 'home' %}">HOME</a> |
+      <a href="{% url 'public_library' user.username %}">PUBLIC LIBRARY</a> |
+      <a href="{% url 'user_library' user.username %}">MY LIBRARY</a>
+    </nav>
+  </head>
+  <body>
+    <div class="Top-bar">
+      <em><strong>{{ score.title }}</strong></em>  |
+      <a href="{% url 'user_library' user.username %}"><input type="button" name="Close" value="Close"></a>
+      <audio controls>
+        <source src="{{ STATIC_PREFIX }}scorefiles/{{ score.music_file }}" type="audio/midi">
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+
+    {{ composition.tracks }}
+
+    <div class="Score image">
+      <embed type="application/pdf" src="{{ STATIC_PREFIX }}scorefiles/{{ score.pdf_file }}#toolbar=0&navpanes=0&scrollbar=0" width="100%" height="600">
+    </div>
+
+    <div class="Editor input menus">
+      <div class="dropdown">
+        <button type="button" name="Add Instrument" class="dropdownbtn" onclick="dropfunction('instrument-dropdown')">Add Instrument</button>
+        <div id="instrument-dropdown" class="dropdown-content">
+          <form id="instrument-menu" class="editor-menu" action="{% url 'edit' user.username score.scoreID 'i' %}" method="post">
+            {% csrf_token %}
+            <select name="instrument" size="4" required>
+              {% for i in instrument_list %}
+                <option value="{{ i }}">{{ i }}</option>
+              {% endfor %}
+            </select>
+            <input type="submit" name="Choose" value="Choose">
+          </form>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <button type="button" name="button" class="dropdownbtn" onclick="dropfunction('metre-dropdown')">Choose Metre</button>
+        <div id="metre-dropdown" class="dropdown-content">
+            <form id="metre-menu" class="editor-menu" action="{% url 'edit' user.username score.scoreID 'm' %}" method="post">
+                {% csrf_token %}
+                <label for="bar">Bar number</label>
+                <select name="bar" size="3" required>
+                  {% for b in composition.0.bars %}
+                  <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                  {% endfor %}
+                </select>
+                <label for="metre">Metre</label>
+                <select name="metre" size="3" required>
+                  {% for m in metre_list %}
+                    <option value="{{ m }}">{{ m }}</option>
+                  {% endfor %}
+                </select>
+                <input type="submit" name="Choose" value="Choose">
+            </form>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <button type="button" name="button" class="dropdownbtn" onclick="dropfunction('key-dropdown')">Choose Key Signature</button>
+        <div id="key-dropdown" class="dropdown-content">
+          <form id="key-menu" class="editor-menu" action="{% url 'edit' user.username score.scoreID 'k' %}" method="post">
+            {% csrf_token %}
+            <label for="bar">Bar number</label>
+            <select name="bar" size="3" required>
+              {% for b in composition.0.bars %}
+              <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+              {% endfor %}
+            </select>
+            <label for="key">Key</label>
+            <select name="key" size="3" required>
+              {% for k in key_list %}
+                <option value="{{ k }}">{{ k }}</option>
+              {% endfor %}
+            </select>
+            <input type="submit" name="Choose" value="Choose">
+          </form>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <button type="button" name="button" class="dropdownbtn" onclick="dropfunction('note-dropdown')">Add Note</button>
+        <div id="note-dropdown" class="dropdown-content">
+          <form id="note-menu" class="editor-menu" action="{% url 'edit' user.username score.scoreID 'n' %}" method="post">
+            {% csrf_token %}
+            <label for="track">Instrument</label>
+            <select name="track" size="3" required>
+              {% for t in composition %}
+                <option value="{{ t.instrument.name }}">{{ t.instrument.name }}</option>
+              {% endfor %}
+            </select>
+            <label for="note">Note</label>
+            <select name="note" size="3" required>
+              {% for n in note_list %}
+                <option value="{{ n }}">{{ n }}</option>
+              {% endfor %}
+            </select>
+            <label for="octave">Octave</label>
+            <select name="octave" size="3" required>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4 (middle octave)</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+            </select>
+            <label for="duration">Note Duration</label>
+            <select name="duration" size="3" required>
+              {% for d in duration_list %}
+                <option value="{{ d }}">{{ d }}</option>
+              {% endfor %}
+            </select>
+            <label for="bar">Bar number</label>
+            <select name="bar" size="3" required>
+              {% for b in composition.0.bars %}
+              <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+              {% endfor %}
+            </select>
+            <label for="position">Bar beat</label>
+            <input type="number" name="position" min="1" max="7" required>
+            <input type="submit" name="Choose" value="Choose">
+          </form>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <button type="button" name="button" class="dropdownbtn" onclick="dropfunction('rest-dropdown')">Add Rest</button>
+        <div id="rest-dropdown" class="dropdown-content">
+          <form id="rest-menu" class="editor-menu" action="{% url 'edit' user.username score.scoreID 'r' %}" method="post">
+            {% csrf_token %}
+            <label for="track">Instrument</label>
+            <select name="track" size="3" required>
+              {% for t in composition %}
+                <option value="{{ t.instrument.name }}">{{ t.instrument.name }}</option>
+              {% endfor %}
+            </select>
+            <label for="duration">Note Duration</label>
+            <select name="duration" size="3" required>
+              {% for d in duration_list %}
+                <option value="{{ d }}">{{ d }}</option>
+              {% endfor %}
+            </select>
+            <label for="bar">Bar number</label>
+            <select name="bar" size="3" required>
+              {% for b in composition.0.bars %}
+              <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+              {% endfor %}
+            </select>
+            <label for="position">Bar beat</label>
+            <input type="number" name="position" min="1" max="7" required>
+            <input type="submit" name="Choose" value="Choose">
+          </form>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <button type="button" name="button" class="dropdownbtn" onclick="dropfunction('delete-note-dropdown')">Delete Note</button>
+        <div id="delete-note-dropdown" class="dropdown-content">
+          <form id="delete-note-menu" class="editor-menu" action="{% url 'edit' user.username score.scoreID 'dn' %}" method="post">
+            {% csrf_token %}
+            <label for="track">Instrument</label>
+            <select name="track" size="3" required>
+              {% for t in composition %}
+                <option value="{{ t.instrument.name }}">{{ t.instrument.name }}</option>
+              {% endfor %}
+            </select>
+            <label for="bar">Bar number</label>
+            <select name="bar" size="3" required>
+              {% for b in composition.0.bars %}
+              <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+              {% endfor %}
+            </select>
+            <label for="position">Bar beat</label>
+            <input type="number" name="position" value="1" min="1" max="7" required>
+            <input type="submit" name="Choose" value="Choose">
+          </form>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <button type="button" name="button" class="dropdownbtn" onclick="dropfunction('delete-instrument-dropdown')">Delete Instrument</button>
+        <div id="delete-instrument-dropdown" class="dropdown-content">
+          <form id="delete-instrument-menu" class="editor-menu" action="{% url 'edit' user.username score.scoreID 'di' %}" method="post">
+            {% csrf_token %}
+            <label for="track">Instrument</label>
+            <select name="track" size="3" required>
+              {% for t in composition %}
+                <option value="{{ t.instrument.name }}">{{ t.instrument.name }}</option>
+              {% endfor %}
+            </select>
+            <input type="submit" name="Choose" value="Choose">
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Scripts -->
+    <script type="text/javascript">
+      function dropfunction(iden) {
+        document.getElementById(iden).classList.toggle("show");
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>ScoreLily - Create Account</title>
+    <nav class="navigation-bar">
+      <a href="{% url 'home' %}">HOME</a> |
+      <a href="{% url 'login' %}">PUBLIC LIBRARY</a> |
+      <a href="{% url 'login' %}">MY LIBRARY</a>
+    </nav>
+  </head>
+  <body>
+    <div class="page-title">
+      Please Create An Account
+    </div>
+    <form id="create-account-form" class="accounts-form" action="{% url 'create_account' %}" method="post">
+      {% csrf_token %}
+      <label for="username">Username:</label>
+      <input type="text" name="username">
+      <label for="email">Email:</label>
+      <input type="email" name="email">
+      <label for="password1">Password:</label>
+      <input type="password" name="password1">
+      <label for="password2">Re-enter Password:</label>
+      <input type="password" name="password2">
+      <input type="submit" name="create" value="Create">
+    </form>
+    <div id="invalid-details-message" class="error-message">
+      {% if message != "None" %}
+        {{ message }}
+      {% endif %}
+    </div>
+    <div id="login-link">
+      If you already have an account: <a href="{% url 'login' %}">Login</a>
+    </div>
+  </body>
+</html>

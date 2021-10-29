@@ -1,0 +1,69 @@
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>ScoreLily - Public Library</title>
+    <nav class="navigation-bar">
+      <a href="{% url 'user_library' username %}">HOME</a> |
+      <a href="{% url 'public_library' username %}">PUBLIC LIBRARY</a> |
+      <a href="{% url 'user_library' username %}">MY LIBRARY</a>
+    </nav>
+  </head>
+
+  <body>
+    <div id="public-search-bar" class="top-bar">
+      <form action="{% url 'public_library' username %}" method="post">
+        {% csrf_token %}
+        <label for="search">Search Your Library:</label>
+        <input type="search" name="search">
+      </form>
+    </div>
+
+    <div id="public-sort-bar" class="side-bar">
+      Order Scores By:
+      <form class="sort" action="{% url 'public_library' username %}" method="post">
+        {% csrf_token %}
+        <input id="title" type="radio" name="sort-options" value="title">
+        <label for="title">Title</label>
+        <input id="author" type="radio" name="sort-options" value="author">
+        <label for="author">Author</label>
+        <input id="created-date" type="radio" name="sort-options" value="created date">
+        <label for="created-date">Date Created</label>
+        <input id="last-modified" type="radio" name="sort-options" value="last modified">
+        <label for="last-modified">Date Last Modified</label>
+        <input type="submit" name="choose" value="Choose">
+      </form>
+    </div>
+
+    <div class="score-table">
+      <table>
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Last Modified</th>
+          <th>Created</th>
+          <th></th>
+        </tr>
+        {% for s in scores %}
+          <tr>
+            <td>{{ s.title }}</td>
+            <td>{{ s.author }}</td>
+            <td>{{ s.last_modified }}</td>
+            <td>{{ s.date_created }}</td>
+            <td>
+              <a href="{{ STATIC_PREFIX }}scorefiles/{{ s.pdf_file }}" download target="_blank">
+                <button type="button" name="export-pdf">Download PDF</button>
+              </a>
+              <a href="{{ STATIC_PREFIX }}scorefiles/{{ s.music_file }}" download target="_blank">
+                <button type="button" name="export-midi">Download MIDI</button>
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+  </body>
+</html>
